@@ -12,7 +12,7 @@ export const usage = '# @yunmoan/koishi-plugin-mc-whitelist\n' +
   '\n' +
   'Miectrat 服务器自助白名单添加绑定\n' +
   '仅针对 QQ 优先兼容优化，其他平台尚不明确。\n\n' +
-  '此插件仅针对基于 LLonebot  的 QQ 平台开发使用，其他平台尚不明确'
+  '此插件仅针对基于 LLonebot  的 QQ 平台开发使用，其他平台尚不明确'+
   '\n' +
   '本插件基于 Rcon 功能实现，需要在服务端上安装 EasyWhitelist 插件。\n' +
   '\n' +

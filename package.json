@@ -1,7 +1,7 @@
 {
   "name": "@yunmoan/koishi-plugin-mc-whitelist",
-  "description": "支持Miectrat白名单添加绑定",
-  "version": "1.0.0",
+  "description": "基于easywhitelist插件支持Miectrat白名单添加绑定",
+  "version": "1.0.1",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "files": [
@@ -12,7 +12,7 @@
   "homepage": "https://rcn.zyghit.cn",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/alice/koishi-plugin-example.git"
+    "url": "git+https://github.com/Yunmoan/koishi-plugin-mc-whitelist.git"
   },
   "scripts": {},
   "keywords": [
@@ -32,6 +32,10 @@
     "koishi": "^4.18.3"
   },
   "koishi": {
+    "description": {
+      "en": "Minecraft Whitelist Plugin RCON",
+      "zh": "基于RCON实现的Minecraft服务器白名单绑定插件"
+    },
     "service": {
       "required": ["database","rcon-ts"],
       "optional": ["assets","database-mysql"]

@@ -10,7 +10,7 @@
 
 使用此方案是由于我测试用的服务端版本核心不支持白名单热添加，如果你的服务端支持白名单热添加，请关闭对 EasyWhitelist 的支持。
 
-[EasyWhitelist插件下载](https://www.spigotmc.org/resources/easywhitelist-name-based-whitelist.65222/)
+[EasyWhitelist插件下载](https://www.spigotmc.org/resources/easywhitelist-name-based-whitelist.65222/) （SpigotMC）
 
 可选将列表数据保存到 MySQL 数据库，或者本地保存。
 ***
