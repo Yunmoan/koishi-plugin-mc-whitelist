@@ -163,8 +163,8 @@ export function apply(ctx: Context, config: Config) {
 
       // 验证 player 是否符合 Minecraft 正版 ID 的格式
       const validPlayerRegex = /^[a-zA-Z0-9_]+$/;
-      if (!player || !validPlayerRegex.test(player)) {
-        return "无效输入!\n命令使用方法：绑定ID 你的ID \n游戏ID只能包含字母、数字和下划线(_)，请重新输入。\n例如：绑定ID Yun_mo_an";
+      if (!player || player.length < 16 || !validPlayerRegex.test(player)) {
+        return "无效输入!\n命令使用方法：绑定ID 你的ID \n游戏ID只能包含字母、数字和下划线(_)且不能超过16位，请重新输入。\n例如：绑定ID Yun_mo_an";
       }
 
       // 检查该游戏 ID 是否已经被绑定
@@ -210,7 +210,7 @@ export function apply(ctx: Context, config: Config) {
 
 
   ctx.command('查询绑定', '查询当前账户绑定的ID')
-    .alias('csbd').alias('bindlist')
+    .alias('cxbd').alias('bindlist')
     .action(async ({session}) => {
       const {userId, username} = session
 
@@ -234,9 +234,6 @@ export function apply(ctx: Context, config: Config) {
       }
 
 
-      logger.info(`User ${userId} bind list: ${bindInfo}`);
-
-
 
 
     })
@@ -248,8 +245,8 @@ export function apply(ctx: Context, config: Config) {
 
       // 验证 player 是否符合 Minecraft 正版 ID 的格式
       const validPlayerRegex = /^[a-zA-Z0-9_]+$/;
-      if (!player || !validPlayerRegex.test(player)) {
-        return "无效输入!\n命令使用方法：解绑ID 你的ID \n游戏ID只能包含字母、数字和下划线(_)，请重新输入。\n例如：解绑ID Yun_mo_an";
+      if (!player || player.length < 16 || !validPlayerRegex.test(player)) {
+        return "无效输入!\n命令使用方法：解绑ID 你的ID \n游戏ID只能包含字母、数字和下划线(_)且不能超过16位，请重新输入。\n例如：解绑ID Yun_mo_an";
       }
 
       // 获取当前用户绑定的列表
@@ -309,6 +306,40 @@ export function apply(ctx: Context, config: Config) {
       }
     });
 
+  ctx.command('查询玩家绑定 <user_id>', '查询指定用户(比如QQ号)绑定的ID',{hidden:true})
+    .alias('acxbd')
+    .action(async ({ session }, user_id) => {
+      const { userId, username } = session;
+
+      if (!user_id) {
+        return '请提供要查询的用户ID。';
+      }
+
+      // 检查是否为管理员
+      if (!isAdmin(userId, config.adminList)) {
+        return '您没有权限执行此命令，请联系管理员。';
+      }
+
+      logger.info(`Administrator query ${user_id} 's bind list`)
+
+      let UserBindList = await ctx.database.get('bind_list', { userId: user_id });
+
+      let bindInfo;
+
+      if(UserBindList.length !== 0) {
+        const bindInfo = UserBindList.map(item => {
+          const bindDate = item.bindDate ? new Date(item.bindDate).toLocaleString() : '未知'; // 如果没有绑定日期，显示 "未知"
+          return `- [#${item.id}] ${item.GameID} （绑定日期：${bindDate}）`;
+        }).join('\n');
+
+        return `该用户已绑定了如下ID：\n${bindInfo}`;
+      } else {
+        return '该用户尚未绑定任何ID。';
+      }
+
+
+    })
+
 
 // 删除绑定命令
   ctx.command('删除绑定 <player>', '删除用户绑定的ID(需要用户提供白名单ID)', { hidden: true })
@@ -324,8 +355,8 @@ export function apply(ctx: Context, config: Config) {
       // 验证输入格式
       const validPlayerRegex = /^[a-zA-Z0-9_]+$/; // 游戏ID格式
       const isDatabaseID = /^#\d+$/; // 数据库ID格式
-      if (!player || (!validPlayerRegex.test(player) && !isDatabaseID.test(player))) {
-        return "无效输入!\n命令使用方法：\n- 删除绑定 玩家ID\n- 删除绑定 #数字ID\n游戏ID只能包含字母、数字和下划线(_)，数字ID需以 # 开头。\n例如：删除绑定 Yun_mo_an 或 删除绑定 #123";
+      if (!player || player.length < 16  || (!validPlayerRegex.test(player) && !isDatabaseID.test(player))) {
+        return "无效输入!\n命令使用方法：\n- 删除绑定 玩家ID\n- 删除绑定 #数字ID\n游戏ID只能包含字母、数字和下划线(_)且不能超过16位，数字ID需以 # 开头。\n例如：删除绑定 Yun_mo_an 或 删除绑定 #123";
       }
 
       // 查询绑定记录
@@ -366,6 +397,41 @@ export function apply(ctx: Context, config: Config) {
           logger.error('移除白名单失败:', error);
           return `移除白名单失败：${error.message}`;
         }
+
+
+    });
+
+
+
+  ctx.command('删除绑定 <player>', '删除用户绑定的ID(需要用户提供白名单ID)', { hidden: true })
+    .alias('ascbd')
+    .action(async ({ session }, player) => {
+      const { userId, username } = session;
+
+      // 检查是否为管理员
+      if (!isAdmin(userId, config.adminList)) {
+        return '您没有权限执行此命令，请联系管理员。';
+      }
+
+      // 验证输入格式
+      const validPlayerRegex = /^[a-zA-Z0-9_]+$/; // 游戏ID格式
+      const isDatabaseID = /^#\d+$/; // 数据库ID格式
+      if (!player || player.length < 16 || (!validPlayerRegex.test(player) && !isDatabaseID.test(player))) {
+        return "无效输入!\n命令使用方法：\n- 删除绑定 玩家ID\n- 删除绑定 #数字ID\n游戏ID只能包含字母、数字和下划线(_)且不能超过16位，数字ID需以 # 开头。\n例如：删除绑定 Yun_mo_an 或 删除绑定 #123";
+      }
+
+      // 查询绑定记录
+      let targetBind;
+      if (isDatabaseID.test(player)) {
+        // 如果输入为 #ID，则提取数据库ID并查询
+        const databaseID = Number(player.replace('#', ''));
+        targetBind = await ctx.database.get('bind_list', { id: databaseID });
+      } else {
+        // 如果输入为玩家ID，则按 GameID 查询
+        targetBind = await ctx.database.get('bind_list', { GameID: player });
+      }
+
+
 
 
     });

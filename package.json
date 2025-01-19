@@ -1,7 +1,7 @@
 {
   "name": "@yunmoan/koishi-plugin-mc-whitelist",
-  "description": "基于easywhitelist插件支持Minecraft白名单添加绑定",
-  "version": "1.1.0",
+  "description": "基于 RCON 实现的支持Minecraft白名单添加绑定",
+  "version": "1.1.1",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "files": [
