@@ -1,7 +1,7 @@
 {
   "name": "@yunmoan/koishi-plugin-mc-whitelist",
   "description": "基于 RCON 实现的支持Minecraft白名单添加绑定",
-  "version": "1.1.2",
+  "version": "1.2.0",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "files": [
@@ -38,8 +38,14 @@
       "zh": "基于RCON实现的Minecraft服务器白名单绑定插件"
     },
     "service": {
-      "required": ["database","rcon-ts"],
-      "optional": ["assets","database-mysql"]
+      "required": [
+        "database",
+        "rcon-ts"
+      ],
+      "optional": [
+        "assets",
+        "database-mysql"
+      ]
     }
   },
   "publishConfig": {

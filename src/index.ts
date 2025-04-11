@@ -305,7 +305,7 @@ export function apply(ctx: Context, config: Config) {
 
       // 验证 player 是否符合 Minecraft 正版 ID 的格式
       const validPlayerRegex = /^[a-zA-Z0-9_]+$/;
-      if (!player || player.length < 16 || !validPlayerRegex.test(player)) {
+      if (!player || player.length > 16 || !validPlayerRegex.test(player)) {
         return "无效输入!\n命令使用方法：解绑ID 你的ID \n游戏ID只能包含字母、数字和下划线(_)且不能超过16位，请重新输入。\n例如：解绑ID Yun_mo_an";
       }
 
@@ -415,7 +415,7 @@ export function apply(ctx: Context, config: Config) {
       // 验证输入格式
       const validPlayerRegex = /^[a-zA-Z0-9_]+$/; // 游戏ID格式
       const isDatabaseID = /^#\d+$/; // 数据库ID格式
-      if (!player || player.length < 16  || (!validPlayerRegex.test(player) && !isDatabaseID.test(player))) {
+      if (!player || player.length > 16  || (!validPlayerRegex.test(player) && !isDatabaseID.test(player))) {
         return "无效输入!\n命令使用方法：\n- 删除绑定 玩家ID\n- 删除绑定 #数字ID\n游戏ID只能包含字母、数字和下划线(_)且不能超过16位，数字ID需以 # 开头。\n例如：删除绑定 Yun_mo_an 或 删除绑定 #123";
       }
 
@@ -476,7 +476,7 @@ export function apply(ctx: Context, config: Config) {
       // 验证输入格式
       const validPlayerRegex = /^[a-zA-Z0-9_]+$/; // 游戏ID格式
       const isDatabaseID = /^#\d+$/; // 数据库ID格式
-      if (!player || player.length < 16 || (!validPlayerRegex.test(player) && !isDatabaseID.test(player))) {
+      if (!player || player.length > 16 || (!validPlayerRegex.test(player) && !isDatabaseID.test(player))) {
         return "无效输入!\n命令使用方法：\n- 删除绑定 玩家ID\n- 删除绑定 #数字ID\n游戏ID只能包含字母、数字和下划线(_)且不能超过16位，数字ID需以 # 开头。\n例如：删除绑定 Yun_mo_an 或 删除绑定 #123";
       }
 
