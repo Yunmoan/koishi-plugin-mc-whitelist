@@ -163,7 +163,7 @@ export function apply(ctx: Context, config: Config) {
 
       // 验证 player 是否符合 Minecraft 正版 ID 的格式
       const validPlayerRegex = /^[a-zA-Z0-9_]+$/;
-      if (!player || player.length < 16 || !validPlayerRegex.test(player)) {
+      if (!player || player.length > 16 || !validPlayerRegex.test(player)) {
         return "无效输入!\n命令使用方法：绑定ID 你的ID \n游戏ID只能包含字母、数字和下划线(_)且不能超过16位，请重新输入。\n例如：绑定ID Yun_mo_an";
       }
 
@@ -208,6 +208,70 @@ export function apply(ctx: Context, config: Config) {
       return result;
     });
 
+  ctx.command('手动绑定 <player> [user_id]', '绑定游戏ID')
+    .alias('abd').alias('管理绑定')
+    .action(async ({session}, player, user_id) => {
+      let result = '';
+      const {userId, username} = session;
+
+      logger.info(`Administrator tries to manually add a binding ${player} -> ${user_id}`);
+
+      if (!user_id) {
+        return '请提供要绑定的用户ID。';
+      }
+
+      // 检查是否为管理员
+      if (!isAdmin(userId, config.adminList)) {
+        return '您没有权限执行此命令，请联系管理员。';
+      }
+
+      // 验证 player 是否符合 Minecraft 正版 ID 的格式
+      const validPlayerRegex = /^[a-zA-Z0-9_]+$/;
+      if (!player || player.length > 16 || !validPlayerRegex.test(player)) {
+        return "无效输入!\n命令使用方法：手动绑定 游戏ID 用户标识(用户ID) \n游戏ID只能包含字母、数字和下划线(_)且不能超过16位，请重新输入。\n例如：绑定ID Yun_mo_an 114514191";
+      }
+
+      // 检查该游戏 ID 是否已经被绑定
+      const existingPlayerBinding = await ctx.database.get('bind_list', {GameID: player});
+      if (existingPlayerBinding.length > 0) {
+        const existingUser = existingPlayerBinding[0].userId;
+        if (existingUser === user_id) {
+          return `绑定失败：${user_id} 已经绑定了此游戏ID (${player})，无法重复绑定！`;
+        } else {
+          return `绑定失败：此游戏ID (${player}) 已被其他人绑定，无法再次绑定。`;
+        }
+      }
+
+      // 检查数据库中当前 userId 已绑定的 ID 数量
+      const existingBindings = await ctx.database.get('bind_list', {userId});
+      if (existingBindings.length >= config.AllowUserBindMaxNumber) {
+        return `绑定失败：用户 ${user_id} 已绑定了 ${existingBindings.length} 个游戏ID，已达到最大限制（${config.AllowUserBindMaxNumber}个）。输入 '查询玩家绑定 用户ID' 可查看您目前绑定的ID个数`;
+      }
+
+      try {
+        await rcon.connect();
+        if (config.isEasyWhitelist) {
+          await rcon.send(`easywl add ${player}`);
+          result = `玩家 ${player} 绑定成功！该账户已与 \n${user_id} 绑定成功`;
+        } else {
+          result += await rcon.send(`whitelist add ${player}`);
+        }
+
+        await ctx.database.create('bind_list', {
+          GameID: player,
+          userId: user_id,
+          username: '管理员手动绑定',
+          bindDate: new Date(),
+        });
+        rcon.disconnect();
+      } catch (e) {
+        logger.error(e);
+        return `连接失败: ${e}\n无法与服务端通讯，请联系系统管理员！！`;
+      }
+
+      return result;
+    });
+
 
   ctx.command('查询绑定', '查询当前账户绑定的ID')
     .alias('cxbd').alias('bindlist')
@@ -232,10 +296,6 @@ export function apply(ctx: Context, config: Config) {
       } else {
         return '您尚未绑定任何ID。';
       }
-
-
-
-
     })
 
   ctx.command('解绑ID <player>', '解除绑定的ID并移除白名单')
